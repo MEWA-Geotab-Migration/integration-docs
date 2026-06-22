@@ -483,7 +483,7 @@
       </div>
       <div class="dep-card">
         <div class="dep-card-title">Branch ID Lookup — GET /branches</div>
-        <div class="dep-card-body">ICCON retrieves all Geotab Branch IDs and builds a static mapping: <strong>MEWA TERRITORY code → Geotab branch.id</strong>. Required for every Appointment.</div>
+        <div class="dep-card-body">MEWA retrieves all Geotab Branch IDs once (via GET /branches) and builds a static manual mapping: <strong>MEWA TERRITORY code → Geotab branch.id</strong>. Required for every Appointment.</div>
         <div class="dep-card-meta">
           <span class="badge once">One-time setup</span>
           <span class="badge api">GET /branches</span>
@@ -571,16 +571,16 @@
   <div class="flow" style="margin-bottom:32px;">
     <!-- MEWA lane -->
     <div class="lane-wrap">
-      <div class="lane-header">MEWA ERP / CRM</div>
+      <div class="lane-header">MEWA Systems</div>
       <div class="lane-body">
         <div class="box mewa">
           <div class="box-title">Kundenstamm</div>
-          <div class="box-sub">Kundennummer, Name, Adresse, Kontakte</div>
-          <span class="tag mewa">ERP/CRM</span>
+          <div class="box-sub">Kundennummer, Name, Adresse, Kontakte, GPS (CRM)</div>
+          <span class="tag mewa">CRM</span>
         </div>
         <div class="box mewa">
           <div class="box-title">Gebietscodes</div>
-          <div class="box-sub">TERRITORY → branch.id Mapping</div>
+          <div class="box-sub">TERRITORY codes per Gesellschaft — statisch, einmalig manuell gemappt auf Geotab branch.id</div>
           <span class="tag mewa">Midsys</span>
         </div>
       </div>
@@ -2558,7 +2558,7 @@ function startIntradayPolling():
       <td class="term">Gebietscode (TERRITORY)</td>
       <td><span class="mono">branch.id</span></td>
       <td><span class="tag-vz">Territory Code</span></td>
-      <td>Alphanumeric code from Midsys. Statically mapped to Geotab branch.id via GET /branches at onboarding. Required on every Appointment.</td>
+      <td>Alphanumeric code from Midsys. Statically mapped to Geotab branch.id — set up manually once at onboarding by calling GET /branches and building a fixed TERRITORY → branch.id table. Required on every Appointment. Updates only needed when new Gesellschaften are added.</td>
     </tr>
     <tr class="gl-row">
       <td class="term">Midsys</td>
