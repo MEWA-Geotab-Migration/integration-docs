@@ -542,7 +542,39 @@
 
     <div class="dep-step">
       <div class="dep-left">
-        <div class="dep-circle" style="background:var(--blue)">6</div>
+        <div class="dep-circle" style="background:#8e44ad">6</div>
+        <div class="dep-vline"></div>
+      </div>
+      <div class="dep-card" style="border-color:#8e44ad;">
+        <div class="dep-card-title" style="color:#6c3483;">Phase 3 — Forms Integration</div>
+        <div class="dep-card-body">Form templates are configured in Geotab (POST /admin/formTemplates) per OrderType and Branch. Driver fills form at visit close → submission stored on <code style="font-size:10px;">visit.actuals.formTemplateSubmission</code> → MEWA reads via status polling and creates Service Ticket in MEWA CRM via webhook/API.</div>
+        <div class="dep-card-meta">
+          <span class="badge once">Setup: one-time per form type</span>
+          <span class="badge api">POST /admin/formTemplates</span>
+          <span class="badge daily">Read: daily polling + real-time</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dep-step">
+      <div class="dep-left">
+        <div class="dep-circle" style="background:#e67e22">7</div>
+        <div class="dep-vline"></div>
+      </div>
+      <div class="dep-card" style="border-color:#e67e22;">
+        <div class="dep-card-title" style="color:#a04000;">Phase 4 — CRM Ad-Hoc Jobs</div>
+        <div class="dep-card-body">Ad-hoc jobs created in MEWA CRM are pushed via <code style="font-size:10px;">PUT /orders</code> with <code style="font-size:10px;">orderType: CRM_ADHOC</code> and <code style="font-size:10px;">visitStatus: 8 (Unassigned)</code>. The Appointment Engine attempts auto-insert into the current day's plan — if a suitable slot and resource exist, it assigns automatically. Otherwise the visit stays Unassigned and the dispatcher assigns manually. Status (Enroute → Completed) flows back to MEWA CRM via the existing status polling.</div>
+        <div class="dep-card-meta">
+          <span class="badge api">PUT /orders · orderType: CRM_ADHOC</span>
+          <span class="badge daily">On-demand (CRM trigger)</span>
+          <span class="badge api">POST /dispatch/orders/{id}/appointments</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dep-step">
+      <div class="dep-left">
+        <div class="dep-circle" style="background:var(--blue)">8</div>
       </div>
       <div class="dep-card">
         <div class="dep-card-title">Validation & Monitoring</div>
@@ -1818,6 +1850,159 @@ function getActuals(appointmentId):
 </pre></div>
 </div>
 
+<!-- ── PHASE 9 (NEW): FORMS INTEGRATION ── -->
+<div class="pc-section">
+<div class="pc-title" style="color:#6c3483;border-left-color:#8e44ad;">Phase 9 (V2) — Forms Integration</div>
+<div class="pc-note">
+  <strong>Swagger confirmed:</strong> <code>CreateFormTemplate</code> accepts <code>htmlContent</code> (full HTML form), <code>branchIds[]</code> (scoped per Gesellschaft), and <code>orderTypeIds[]</code> (triggered per job type). On visit close, the driver submits the form — Geotab stores the result on <code>visit.actuals.formTemplateSubmission</code>. MEWA reads this via status polling and creates a Service Ticket in the MEWA CRM via webhook.
+</div>
+<div class="code"><pre>
+<span class="c-green">// ── Phase 9: Forms Integration ───────────────────────────────</span>
+<span class="c-green">// Part A: Setup (once per form type, done by Geotab admin)</span>
+
+<span class="c-green">// Create a form template scoped to CRM_ADHOC order type + all branches</span>
+formTemplate = POST("/admin/formTemplates", {
+  id:           "mewa-service-report-v1",
+  name:         "MEWA Service Report",
+  htmlContent:  "&lt;form&gt;...&lt;/form&gt;",  <span class="c-green">// full HTML form built by MEWA</span>
+  branchIds:    Object.values(CONFIG.BRANCH_MAP),  <span class="c-green">// all Gesellschaften</span>
+  orderTypeIds: [CONFIG.ORDER_TYPE.CRM_ADHOC,
+                 CONFIG.ORDER_TYPE.MIDSYS_JOB]  <span class="c-green">// shown for both job types</span>
+})
+<span class="c-green">// Driver sees the form automatically in Driver App at visit close</span>
+<span class="c-green">// → form is tied to orderType, no extra configuration per appointment</span>
+
+<span class="c-green">// Part B: Read submitted form data (in status polling loop)</span>
+function processFormSubmissions(visits):
+  for visit in visits:
+    if visit.visitStatus == 4   <span class="c-green">// Completed</span>
+    and visit.actuals.formTemplateSubmission:
+
+      submission = visit.actuals.formTemplateSubmission
+      <span class="c-green">// submission.templateId    → which form was used</span>
+      <span class="c-green">// submission.versionNumber → which version</span>
+      <span class="c-green">// submission.formData      → key-value pairs of field answers</span>
+
+      <span class="c-green">// Create Service Ticket in MEWA CRM</span>
+      createCRMServiceTicket({
+        appointmentId: visit.appointmentId,
+        kundennummer:  visit.customerId,
+        technikerId:   visit.resource.id,
+        abschlusszeit: visit.actuals.closeDateTimeUtc,
+        formData:      submission.formData,
+        <span class="c-green">// formData might contain: { "Fehlercode": "E-42", "Bemerkung": "..." }</span>
+      })
+
+<span class="c-green">// CRM Service Ticket creation — webhook or direct CRM API call</span>
+function createCRMServiceTicket(data):
+  POST(CONFIG.CRM_WEBHOOK_URL, {
+    type:       "SERVICE_TICKET",
+    source:     "GeotabAdvancedRouting",
+    customerId: data.kundennummer,
+    driverId:   data.technikerId,
+    closedAt:   data.abschlusszeit,
+    fields:     data.formData
+  })
+  <span class="c-green">// → MEWA CRM creates ticket automatically</span>
+  <span class="c-green">// → Links to Kundennummer + Appointment ID for traceability</span>
+</pre></div>
+</div>
+
+<!-- ── PHASE 10 (NEW): CRM AD-HOC JOBS ── -->
+<div class="pc-section">
+<div class="pc-title" style="color:#a04000;border-left-color:#e67e22;">Phase 10 (V2) — CRM Ad-Hoc Jobs</div>
+<div class="pc-note">
+  <strong>Flow:</strong> Ad-hoc job created in MEWA CRM → pushed immediately via <code>PUT /orders</code> with <code>orderType: CRM_ADHOC</code> and <code>visitStatus: 8 (Unassigned)</code>. Geotab attempts auto-insert into the running day plan via the Appointment Engine. If a suitable resource + time slot is found: auto-assigned. If not: stays Unassigned, dispatcher assigns manually in Dispatch view. Status flows back to MEWA CRM via existing polling loop.
+</div>
+<div class="code"><pre>
+<span class="c-green">// ── Phase 10: CRM Ad-Hoc Jobs ────────────────────────────────</span>
+<span class="c-green">// Triggered on-demand from MEWA CRM (not part of daily Midsys batch)</span>
+<span class="c-green">// Can arrive any time during the dispatch day</span>
+
+function createAdHocJob(crmJob):
+  ensureAuth()
+
+  <span class="c-green">// Step 1: Create Order + Appointment via PUT /orders</span>
+  <span class="c-green">// Same structure as Midsys jobs — only orderType differs</span>
+  coords = crmJob.lat &amp;&amp; crmJob.lng
+         ? { latitude: crmJob.lat, longitude: crmJob.lng }
+         : geocodeViaGeotabAddress(crmJob.vollAdresse)
+
+  PUT("/orders", [{
+    id:          crmJob.jobId,          <span class="c-green">// CRM job ID as external key</span>
+    sourceType:  "API",
+    orderStatus: 1,
+    sourceSystem:"MEWA-CRM",
+    orderType:   { id: CONFIG.ORDER_TYPE.CRM_ADHOC },  <span class="c-green">// ← key differentiator</span>
+    account:     { id: crmJob.kundennummer },
+    appointments: [{
+      id:               crmJob.jobId + "-appt",
+      branch:           { id: CONFIG.BRANCH_MAP[crmJob.gesellschaftCode] },
+      orderType:        { id: CONFIG.ORDER_TYPE.CRM_ADHOC },
+      appointmentStatus:1,
+      customerId:       crmJob.kundennummer,
+      address:          buildAddress(crmJob, coords),
+      contactDetails:   buildContact(crmJob),
+      arrivalDate:      crmJob.wunschDatum ?? today(),
+      arrivalWindowBegin:crmJob.zeitVon ?? "08:00",
+      arrivalWindowEnd:  crmJob.zeitBis ?? "18:00",
+      <span class="c-green">// No lockedResource → visitStatus=8 (Unassigned)</span>
+      <span class="c-green">// Appointment Engine will attempt auto-assignment</span>
+      appointmentNotes: [{
+        comment:          crmJob.beschreibung + "\nCRM-Ref: " + crmJob.jobId,
+        noteSource:       "MEWA-CRM",
+        createUser:       "crm-sync",
+        createDateTimeUtc:now()
+      }]
+    }]
+  }])
+
+  <span class="c-green">// Step 2: Attempt auto-insert into running day plan</span>
+  <span class="c-green">// If today's plan already exists → add appointment to it</span>
+  todayPlan = GET("/route/plans?branchId=" + CONFIG.BRANCH_MAP[crmJob.gesellschaftCode]
+                + "&fromDate=" + today()
+                + "&status=DISPATCH") [0]
+
+  if todayPlan:
+    POST("/dispatch/orders/" + crmJob.jobId + "/appointments", {})
+    <span class="c-green">// Geotab Appointment Engine evaluates:</span>
+    <span class="c-green">// → Is there a resource with capacity + correct orderType in the branch?</span>
+    <span class="c-green">// → Is there a time window that fits arrivalWindowBegin/End?</span>
+    <span class="c-green">// → If yes: auto-assigns + inserts into route sequence</span>
+    <span class="c-green">// → If no:  stays visitStatus=8 (Unassigned) → dispatcher sees it</span>
+
+  <span class="c-green">// Step 3: Status feedback to MEWA CRM (same polling loop as Midsys)</span>
+  <span class="c-green">// No extra code needed — pollVisitStatus() catches all branches</span>
+  <span class="c-green">// CRM-specific handling in the status switch:</span>
+  <span class="c-green">//   visitStatus=2 (Enroute)   → CRM: "Techniker unterwegs"</span>
+  <span class="c-green">//   visitStatus=3 (InProgress) → CRM: "Am Kunden"</span>
+  <span class="c-green">//   visitStatus=4 (Completed)  → CRM: "Erledigt" + form data</span>
+  <span class="c-green">//   visitStatus=6 (NotDone)    → CRM: "Nicht erledigt" + reason</span>
+
+  <span class="c-green">// Step 4: Form submission → Service Ticket (Phase 9)</span>
+  <span class="c-green">// CRM_ADHOC jobs have the Service Report form attached</span>
+  <span class="c-green">// → driver fills form at close → createCRMServiceTicket() called</span>
+  <span class="c-green">// → ticket auto-links to crmJob.jobId in MEWA CRM</span>
+
+<span class="c-green">// Extended status handler for CRM jobs (added to pollVisitStatus)</span>
+function handleCRMJobStatus(visit, appointmentId):
+  isCRMJob = appointmentId.startsWith(CONFIG.CRM_JOB_PREFIX)
+  if not isCRMJob: return
+
+  switch visit.visitStatus:
+    case 4:  <span class="c-green">// Completed</span>
+      CRM.updateJob(appointmentId, "ERLEDIGT", visit.actuals.closeDateTimeUtc)
+      if visit.actuals.formTemplateSubmission:
+        createCRMServiceTicket({ appointmentId, ...visit.actuals })
+    case 6:  <span class="c-green">// NotDone</span>
+      CRM.updateJob(appointmentId, "NICHT_ERLEDIGT",
+        visit.actuals.closeCodesComment)
+    case 8:  <span class="c-green">// Still Unassigned after engine attempt</span>
+      CRM.flagForManualDispatch(appointmentId)
+      <span class="c-green">// → dispatcher sees in Dispatch view, assigns manually</span>
+</pre></div>
+</div>
+
 <!-- ── PHASE 8: VOLLSTÄNDIGER SYNC-ZYKLUS ── -->
 <div class="pc-section">
 <div class="pc-title">Phase 8 — Vollständiger Tages-Sync (Orchestration)</div>
@@ -1869,6 +2054,13 @@ function startIntradayPolling():
     for branchId in activeBranches():
       pollVisitStatus(branchId, today(), lastPollTs)
       lastPollTs = now()
+
+<span class="c-green">// CRM Ad-Hoc jobs: triggered on-demand by MEWA CRM (Phase 10)</span>
+<span class="c-green">// No scheduler needed — CRM calls createAdHocJob() directly via webhook</span>
+WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
+
+<span class="c-green">// Form submissions: processed inside pollVisitStatus() (Phase 9)</span>
+<span class="c-green">// Completed visits with formTemplateSubmission → createCRMServiceTicket()</span>
 
 <span class="c-green">// Noch offene TODOs (echte Unklarheiten — nicht Swagger-Fragen):</span>
 <span class="c-orange">// TODO: Geocoding-Fallback — GET /common/addresses als Geotab-eigener Geocoder?</span>
