@@ -442,6 +442,10 @@
   <div class="phase-tab" onclick="showDiagram('architecture')" style="border-color:#16a085;color:#0e6655;">
     7 · Architecture
   </div>
+  <div class="phase-tab" onclick="showDiagram('glossary')" style="border-color:#8e44ad;color:#6c3483;">
+    <span class="en">8 · Glossary</span>
+    <span class="de">8 · Glossar</span>
+  </div>
 </div>
 
 <!-- ════════════════════════════════════════════════
@@ -2434,12 +2438,324 @@ function startIntradayPolling():
 
 </div><!-- end architecture diagram -->
 
+<!-- ════════════════════════════════════════════════
+     TAB 8: GLOSSARY
+     ════════════════════════════════════════════════ -->
+<div class="diagram" id="glossary">
+
+<style>
+.gl-section { margin-bottom: 28px; }
+.gl-title {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  border-left: 4px solid #8e44ad; padding-left: 10px;
+  margin-bottom: 10px;
+}
+.gl-table {
+  width: 100%; border-collapse: collapse; font-size: 11px;
+  background: var(--white); border-radius: 8px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.gl-table th {
+  background: var(--navy); color: var(--white);
+  padding: 8px 12px; text-align: left;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .4px; text-transform: uppercase;
+}
+.gl-table td {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top; line-height: 1.5;
+}
+.gl-table tr:last-child td { border-bottom: none; }
+.gl-table tr:nth-child(even) td { background: var(--lightgray); }
+.gl-table .term { font-weight: 700; color: var(--navy); white-space: nowrap; }
+.gl-table .mono { font-family: 'Roboto Mono', monospace; font-size: 10px; color: var(--blue); }
+.gl-table .tag-mewa  { display:inline-block; background:#d4f0b0; color:#3a6e10; font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.gl-table .tag-gtb   { display:inline-block; background:#c8d7f5; color:var(--navy); font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.gl-table .tag-vz    { display:inline-block; background:#fad7a0; color:#a04000; font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.gl-table .tag-api   { display:inline-block; background:#cce8fb; color:#00518f; font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px; }
+</style>
+
+<!-- Search box -->
+<div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;">
+  <input id="gl-search" type="text" placeholder="Filter terms..."
+    style="flex:1;padding:7px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;outline:none;"
+    oninput="filterGlossary(this.value)">
+  <span id="gl-count" style="font-size:11px;color:#888;white-space:nowrap;"></span>
+</div>
+
+<!-- Section 1: Data Hierarchy -->
+<div class="gl-section">
+  <div class="gl-title">
+    <span class="en">Data Hierarchy — Midsys → Geotab → Verizon</span>
+    <span class="de">Datenhierarchie — Midsys → Geotab → Verizon</span>
+  </div>
+  <table class="gl-table" id="gl-hierarchy">
+    <tr>
+      <th>Midsys (MEWA)</th>
+      <th>Geotab Advanced Routing</th>
+      <th>Verizon</th>
+      <th>Description / Beschreibung</th>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Gesellschaft</td>
+      <td><span class="tag-gtb">Branch</span></td>
+      <td><span class="tag-vz">Territory</span></td>
+      <td>Independent business unit. Defines planning scope, vehicle pool, resources, calendar and optimization profile. One Branch per Gesellschaft in Geotab.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Kunde / Customer</td>
+      <td><span class="tag-gtb">Customer / Account</span></td>
+      <td><span class="tag-vz">Marker</span></td>
+      <td>Location with GPS coordinates, contacts and customer value. Midsys knows only the Kundennummer — full master data comes from MEWA CRM (Customer Pre-Process).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Lieferstelle / Patch</td>
+      <td><span class="tag-gtb">Appointment</span></td>
+      <td><span class="tag-vz">Patch (table + notes)</span></td>
+      <td>Sub-entity at customer level. Contains time window, approach instructions, BOM materials and address. Represents a single visit at the customer site.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Tauschort / Exchange Place</td>
+      <td><span class="tag-gtb">Appointment-level notes</span></td>
+      <td>—</td>
+      <td>Physical exchange location within a Patch. Mapped to appointment notes or a custom field.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Tour</td>
+      <td><span class="tag-gtb">Order</span></td>
+      <td><span class="tag-vz">Job</span></td>
+      <td>Parent entity for a day. Contains multiple Patches. Created in Geotab as Order with sourceType "API" — permanent, cannot be deleted. Lifecycle via orderStatus only.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Liefertag</td>
+      <td><span class="tag-gtb">Plan</span></td>
+      <td><span class="tag-vz">Dispatch Day Filter</span></td>
+      <td>All planned deliveries for one day per Gesellschaft. Corresponds to a Routing Plan in Geotab. Created with baseline:true to preserve Midsys sequence.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Disposition (Live)</td>
+      <td><span class="tag-gtb">Dispatch</span></td>
+      <td><span class="tag-vz">Dispatch</span></td>
+      <td>Live view of the current day. Shows real-time driver and stop status. Dispatcher can intervene — changes flow back to Midsys via status polling.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Lieferschein / Delivery Note (DN)</td>
+      <td><span class="mono">billOfMaterials[]</span></td>
+      <td>—</td>
+      <td>Item-level delivery data: article number, description, quantity, unit. Stored as BOM array on Appointment. Naming: "PATCH_NR | ITEM_DESCRIPTION".</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Anfahrtshinweis</td>
+      <td><span class="mono">appointmentNotes[].comment</span></td>
+      <td><span class="tag-vz">Notes field</span></td>
+      <td>Textual approach instruction for the driver. Stored as note with noteSource="Midsys". May also be stored on Customer record (pending Product confirmation).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Gebietscode (TERRITORY)</td>
+      <td><span class="mono">branch.id</span></td>
+      <td><span class="tag-vz">Territory Code</span></td>
+      <td>Alphanumeric code from Midsys. Statically mapped to Geotab branch.id via GET /branches at onboarding. Required on every Appointment.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Midsys</td>
+      <td><span class="tag-api">sourceType: "API"</span></td>
+      <td><span class="tag-vz">Data Source</span></td>
+      <td>MEWA production and factory system. Source of truth for all operational data. All orders imported from Midsys carry sourceType "API" — permanent, status-controlled.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Section 2: API Terms -->
+<div class="gl-section">
+  <div class="gl-title">API Terms</div>
+  <table class="gl-table" id="gl-api">
+    <tr><th>Term</th><th>Context</th><th>Description</th></tr>
+    <tr class="gl-row">
+      <td class="term mono">tenant-id</td>
+      <td>HTTP Header — all requests</td>
+      <td>Unique MEWA tenant name in the Advanced Routing system. Provisioned by Geotab. Required on every API call.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">user-id</td>
+      <td>HTTP Header — all requests</td>
+      <td>API user ID. Required together with tenant-id on every call.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">sourceType: "API"</td>
+      <td>Order.sourceType</td>
+      <td>Marks Midsys as external source of truth. Orders with this value cannot be deleted — lifecycle controlled via orderStatus only.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">orderStatus</td>
+      <td>Order field</td>
+      <td>Lifecycle status. 1 = Active, 5 = Cancelled. Controls order activation since deletion is not possible for sourceType "API".</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">appointmentStatus</td>
+      <td>Appointment field</td>
+      <td>1 = Active, 5 = Cancelled. To cancel a Patch: set appointmentStatus=5 (do not omit from next PUT).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">visitStatus</td>
+      <td>Visit field (Enum)</td>
+      <td>1=Assigned · 2=Enroute · 3=InProgress · 4=Completed · 5=Cancelled · 6=NotDone · 7=Undone · 8=Unassigned</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">branch.id</td>
+      <td>Appointment — required</td>
+      <td>Geotab internal Branch ID (Gesellschaft). Fetched once at onboarding via GET /branches. Required on every Appointment and Plan.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">orderType.id</td>
+      <td>Order + Appointment — required</td>
+      <td>Geotab internal OrderType ID. Defines duration, cost, icon and scheduling parameters. V1: two types — Midsys-Job and CRM-Adhoc. Constant per tenant.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">customerId</td>
+      <td>Appointment — optional</td>
+      <td>External customer number from MEWA (= Kundennummer). Links Appointment to the Customer record created via POST /customers.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">baseline: true</td>
+      <td>PostPlan field</td>
+      <td>Swagger-confirmed flag on POST /plans. Imports the plan as-is from Midsys — no auto-routing or sequence changes. Requires actual start/end times on all visits.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">geoCode</td>
+      <td>Address — required</td>
+      <td>GPS coordinates (latitude, longitude). Required field on Appointment address. Source: MEWA CRM. Fallback: GET /common/addresses geocoder (pending confirmation).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">arrivalWindowBegin/End</td>
+      <td>Appointment — required</td>
+      <td>Earliest/latest arrival time in "HH:MM" format. Defines the optimization time window. Required on every Appointment.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">lockedResource</td>
+      <td>Appointment — optional</td>
+      <td>Reference to a Resource (driver/vehicle) that must be assigned to this visit. Optional — if absent, visitStatus=8 (Unassigned) and Geotab dispatcher assigns later.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term mono">planned.sequence</td>
+      <td>Visit.planned field</td>
+      <td>Sequence number for the visit within a resource's route. Used in baseline plans to preserve the Midsys tour sequence.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Rolling 8-day window</td>
+      <td>PUT /orders</td>
+      <td>Sync horizon. MEWA sends all Appointments for the next 8 days daily. Past dates are not updated. Appointments persist even if omitted from a subsequent PUT.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Section 3: System Terms -->
+<div class="gl-section">
+  <div class="gl-title">
+    <span class="en">System Terms</span>
+    <span class="de">Systembegriffe</span>
+  </div>
+  <table class="gl-table" id="gl-systems">
+    <tr><th>Term</th><th>Description</th></tr>
+    <tr class="gl-row">
+      <td class="term">Midsys</td>
+      <td>MEWA production and factory system. Source of truth for all operational data: tours, patches, delivery notes, sequences, quantities. External source of truth for the integration.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">api-rop</td>
+      <td>Geotab Advanced Routing & Optimization API. REST/OAS 3.0. Base URL: <span class="mono">https://optimization-eu-admin.geotab.com/api/</span></td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Auth Endpoint</td>
+      <td><span class="mono">POST https://my3075.geotab.com/rop/authenticate</span> — MEWA-specific authentication endpoint. Returns session token for all subsequent API calls.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">ms-customer</td>
+      <td>Geotab microservice for customer master data. Swagger documents only id + name — full schema (address, contacts, notes) not yet published. Linked to Appointments via customerId.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Swagger UI</td>
+      <td><span class="mono">https://optimization-eu-admin.geotab.com/api/docs</span> — API documentation. Direct call execution not functional — use for endpoint discovery only.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Optimization Center</td>
+      <td>Geotab frontend for Advanced Routing. Access: MyGeotab → Productivity → Advanced Routing → Optimization Center.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Dispatch (Geotab)</td>
+      <td>Geotab live day management frontend. Shows real-time driver and stop status. Dispatcher can reassign visits, override sequences and flag issues.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Driver App (Connect)</td>
+      <td>Mobile app for drivers. Receives daily plan, shows appointments with address, notes, BOM and arrival window. Driver updates visit status (Enroute → InProgress → Completed).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Branch (Geotab)</td>
+      <td>Geotab entity for a Gesellschaft / business unit. Has own resources, vehicles, calendar and optimization profile. Appointments and plans are always scoped to a Branch.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Resource (Geotab)</td>
+      <td>Driver or vehicle with availability calendar and capacity profile. Linked to a Branch. Can be a Driver (person) or Vehicle (asset).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Visit (Geotab)</td>
+      <td>Geotab-internal entity for a planned stop on a route. Created by the optimization engine. Contains planned and actual timestamps, sequence, resource and status.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">MyGeotab</td>
+      <td>Geotab fleet management platform. Linked to Advanced Routing via Service Account (PUT /provisioning/mygeotab/serviceAccount). Provides live vehicle positions and GPS geofencing for auto-status.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Customer Pre-Process</td>
+      <td>Mandatory onboarding step before first sync. Syncs MEWA CRM customer master data (address, GPS, contacts, approach notes) into Geotab ms-customer via POST /customers. Kundennummer becomes the external id.</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">ICCON</td>
+      <td>Integration partner. Brett Kelley (Senior Integrations Engineering). Responsible for middleware between Midsys and the Geotab Advanced Routing API.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Section 4: Contacts -->
+<div class="gl-section">
+  <div class="gl-title">
+    <span class="en">Project Contacts</span>
+    <span class="de">Projektkontakte</span>
+  </div>
+  <table class="gl-table">
+    <tr><th>Role</th><th>Name</th><th>Company</th></tr>
+    <tr><td>Solutions Architect</td><td class="term">Patrick Zeilbeck</td><td>Geotab</td></tr>
+    <tr><td>Business Analyst</td><td class="term">Courtney Egts</td><td>Geotab</td></tr>
+    <tr><td>AVP Route Optimization Sales</td><td class="term">Ryan Hoover</td><td>Geotab</td></tr>
+    <tr><td>Project Manager</td><td class="term">Dalibor Antic</td><td>Geotab</td></tr>
+    <tr><td>Senior Integrations Engineering</td><td class="term">Brett Kelley</td><td>ICCON</td></tr>
+    <tr><td>BDM</td><td class="term">Michael Schmidmeier</td><td>Geotab</td></tr>
+  </table>
+</div>
+
+</div><!-- end glossary diagram -->
+
+<script>
+function filterGlossary(query) {
+  const q = query.toLowerCase().trim();
+  const rows = document.querySelectorAll('#glossary .gl-row');
+  let visible = 0;
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const show = !q || text.includes(q);
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  const count = document.getElementById('gl-count');
+  if (count) count.textContent = q ? visible + ' results' : '';
+}
+</script>
+
 <script>
 function showDiagram(id) {
   document.querySelectorAll('.diagram').forEach(d => d.classList.remove('active'));
   document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const tabs = {'deps':0,'flow':1,'mapping':2,'questions':3,'selfintegration':4,'pseudocode':5,'architecture':6};
+  const tabs = {'deps':0,'flow':1,'mapping':2,'questions':3,'selfintegration':4,'pseudocode':5,'architecture':6,'glossary':7};
   document.querySelectorAll('.phase-tab')[tabs[id]].classList.add('active');
 }
 
