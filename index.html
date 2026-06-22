@@ -2125,7 +2125,7 @@ function startIntradayPolling():
 
 <div class="arch-legend">
   <div class="arch-legend-item"><div class="arch-legend-dot" style="background:#27ae60"></div> MEWA Systems</div>
-  <div class="arch-legend-item"><div class="arch-legend-dot" style="background:#2980b9"></div> Sync Layer (MEWA Dev)</div>
+  <div class="arch-legend-item"><div class="arch-legend-dot" style="background:#2980b9"></div> MEWA Integration Layer</div>
   <div class="arch-legend-item"><div class="arch-legend-dot" style="background:#25477b"></div> Geotab Advanced Routing</div>
   <div class="arch-legend-item"><div class="arch-legend-dot" style="background:#7f8c8d"></div> Field</div>
   <span style="margin-left:auto;font-size:10px;color:#888;">
@@ -2159,21 +2159,21 @@ function startIntradayPolling():
     </div>
   </div>
 
-  <!-- CONNECTOR: MEWA → Sync Layer -->
+  <!-- CONNECTOR: MEWA → Integration Layer -->
   <div class="arch-connector">
     <div class="arch-arrow-line"></div>
     <span class="arch-arrow-label">Extract &amp; Transform</span>
-    <span class="arch-arrow-method">Midsys API / DB query</span>
+    <span class="arch-arrow-method">Midsys query · CRM lookup</span>
     <span class="freq freq-daily">daily 03:00</span>
   </div>
 
-  <!-- ── ZONE 2: SYNC LAYER ── -->
+  <!-- ── ZONE 2: MEWA INTEGRATION LAYER ── -->
   <div class="arch-row">
-    <div class="arch-zone z-iccon">SYNC</div>
+    <div class="arch-zone" style="background:#27ae60;">MEWA DEV</div>
     <div class="arch-zone-body">
       <div class="arch-systems">
 
-        <div class="arch-box ab-sync">
+        <div class="arch-box ab-mewa">
           <div class="ab-title">Auth Handler</div>
           <div class="ab-sub">
             Fetches session token.<br>
@@ -2183,40 +2183,37 @@ function startIntradayPolling():
           <span class="ab-tag">Phase 0</span>
         </div>
 
-        <div class="arch-box ab-sync">
+        <div class="arch-box ab-mewa">
           <div class="ab-title">Config Store</div>
           <div class="ab-sub">
-            Static maps loaded once.<br>
-            TERRITORY → branch.id<br>
-            OrderType IDs (Midsys / CRM)<br>
-            OptimizationProfile ID
+            Static maps — set up once manually.<br>
+            TERRITORY → branch.id (from Midsys)<br>
+            OrderType IDs · OptimizationProfile ID
           </div>
-          <span class="ab-tag">Phase 1</span>
+          <span class="ab-tag">Phase 1 · one-time</span>
         </div>
 
-        <div class="arch-box ab-sync">
+        <div class="arch-box ab-mewa">
           <div class="ab-title">Customer Sync</div>
           <div class="ab-sub">
-            Upserts customer records.<br>
+            Upserts customer records from CRM.<br>
             id = Kundennummer<br>
-            Approach notes + hyperlinks<br>
-            Geocoded address
+            Address, contacts, GPS, notes
           </div>
           <span class="ab-tag">Phase 2 · on change</span>
         </div>
 
-        <div class="arch-box ab-sync">
+        <div class="arch-box ab-mewa">
           <div class="ab-title">Plan Builder</div>
           <div class="ab-sub">
             Builds baseline plan payload.<br>
-            baseline: true<br>
-            status: "DISPATCH"<br>
+            baseline: true · status: "DISPATCH"<br>
             Route No. in plan name
           </div>
           <span class="ab-tag">Phase 3 · daily</span>
         </div>
 
-        <div class="arch-box ab-sync">
+        <div class="arch-box ab-mewa">
           <div class="ab-title">Order / Appt Builder</div>
           <div class="ab-sub">
             Tour → Order<br>
@@ -2227,22 +2224,25 @@ function startIntradayPolling():
           <span class="ab-tag">Phase 4 · daily</span>
         </div>
 
-        <div class="arch-box ab-sync">
+        <div class="arch-box ab-mewa">
           <div class="ab-title">Status Poller</div>
           <div class="ab-sub">
             Reads visitStatus changes.<br>
             Enroute · InProgress · Completed<br>
             Writes actuals back to Midsys.<br>
-            Runs every 10 min intraday.
+            Every 10 min intraday.
           </div>
           <span class="ab-tag">Phase 7 · real-time</span>
         </div>
 
       </div>
+      <div style="margin-top:10px;padding:7px 10px;background:#f0fae6;border:1px solid #7cc244;border-radius:6px;font-size:10px;color:#3a6e10;">
+        <strong>ICCON (Brett Kelley)</strong> available as optional technical bridge if specific gaps arise — no commitment made yet.
+      </div>
     </div>
   </div>
 
-  <!-- CONNECTOR: Sync → Geotab -->
+  <!-- CONNECTOR: MEWA Integration Layer → Geotab -->
   <div class="arch-connector">
     <div class="arch-arrow-line"></div>
     <span class="arch-arrow-label">REST / JSON over HTTPS</span>
