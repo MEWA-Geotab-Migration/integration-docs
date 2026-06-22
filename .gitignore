@@ -1,0 +1,8 @@
+logs/
+*.sh
+scripts/
+drafts/
+*.json
+memory/
+*.md
+!README.md
