@@ -38,31 +38,7 @@
   }
 
   /* ── LANGUAGE TOGGLE ── */
-  .lang-toggle {
-    display: inline-flex;
-    gap: 0;
-    margin-bottom: 20px;
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    overflow: hidden;
-    background: var(--white);
-  }
-  .lang-btn {
-    padding: 5px 14px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    color: var(--gray);
-    transition: all .15s;
-    letter-spacing: .4px;
-  }
-  .lang-btn.active { background: var(--navy); color: var(--white); }
-  .lang-btn:hover:not(.active) { background: var(--lightgray); }
 
-  /* Language visibility — EN default */
-  .de { display: none; }
   .en { display: inline; }
   .de-block { display: none; }
   .en-block { display: block; }
@@ -405,46 +381,34 @@
 
 <h1>MEWA Midsys → Geotab Advanced Routing</h1>
 <p class="subtitle">
-  <span class="en">Data Flow & API Mapping — V0.2 · 2026-06-22 · [CONFIDENTIAL — MEWA]</span>
-  <span class="de">Datenfluss & API-Mapping — V0.2 · 22.06.2026 · [CONFIDENTIAL — MEWA]</span>
+  Data Flow & API Mapping — V0.2 · 2026-06-22 · [CONFIDENTIAL — MEWA]
 </p>
 
-<div class="lang-toggle">
-  <button class="lang-btn active" onclick="setLang('en')">EN</button>
-  <button class="lang-btn" onclick="setLang('de')">DE</button>
-</div>
 
 <div class="phase-tabs">
   <div class="phase-tab active" onclick="showDiagram('deps')">
-    <span class="en">1 · Dependency Chain</span>
-    <span class="de">1 · Abhängigkeiten</span>
+    1 · Dependency Chain
   </div>
   <div class="phase-tab" onclick="showDiagram('flow')">
-    <span class="en">2 · Data Flow</span>
-    <span class="de">2 · Datenfluss</span>
+    2 · Data Flow
   </div>
   <div class="phase-tab" onclick="showDiagram('mapping')">
-    <span class="en">3 · Field Mapping</span>
-    <span class="de">3 · Feld-Mapping</span>
+    3 · Field Mapping
   </div>
   <div class="phase-tab" onclick="showDiagram('questions')">
-    <span class="en">4 · Open Questions</span>
-    <span class="de">4 · Offene Fragen</span>
+    4 · Open Questions
   </div>
   <div class="phase-tab" onclick="showDiagram('selfintegration')" style="border-color:#7cc244;color:#3a6e10;">
-    <span class="en">5 · MEWA Self-Integration</span>
-    <span class="de">5 · MEWA Eigenentwicklung</span>
+    5 · MEWA Self-Integration
   </div>
   <div class="phase-tab" onclick="showDiagram('pseudocode')" style="border-color:#9b59b6;color:#6c3483;">
-    <span class="en">6 · Pseudo-Code Flow</span>
-    <span class="de">6 · Pseudo-Code Flow</span>
+    6 · Pseudo-Code Flow
   </div>
   <div class="phase-tab" onclick="showDiagram('architecture')" style="border-color:#16a085;color:#0e6655;">
     7 · Architecture
   </div>
   <div class="phase-tab" onclick="showDiagram('glossary')" style="border-color:#8e44ad;color:#6c3483;">
-    <span class="en">8 · Glossary</span>
-    <span class="de">8 · Glossar</span>
+    8 · Glossary
   </div>
 </div>
 
@@ -612,7 +576,7 @@
         </div>
         <div class="box mewa">
           <div class="box-title">Gebietscodes</div>
-          <div class="box-sub">TERRITORY codes per Gesellschaft — statisch, einmalig manuell gemappt auf Geotab branch.id</div>
+          <div class="box-sub">TERRITORY codes per Gesellschaft — static, set up manually once, mapped to Geotab branch.id</div>
           <span class="tag mewa">Midsys</span>
         </div>
       </div>
@@ -687,7 +651,7 @@
         </div>
         <div class="box mewa">
           <div class="box-title">Patch / Job</div>
-          <div class="box-sub">Patch-ID · Zeitfenster · Ist-Zeiten · Sequenz</div>
+          <div class="box-sub">Patch-ID · Time window · Actual times · Sequence</div>
           <span class="tag mewa">Appointment level</span>
         </div>
         <div class="box mewa">
@@ -826,8 +790,8 @@
       <tr><td>GPS Lat</td><td class="mono">address.geoCode.latitude</td><td>number</td><td class="req">YES</td><td>From Midsys if available ⚠</td></tr>
       <tr><td>GPS Lng</td><td class="mono">address.geoCode.longitude</td><td>number</td><td class="req">YES</td><td>From Midsys if available ⚠</td></tr>
       <tr><td>Geplanter Tag</td><td class="mono">arrivalDate</td><td>ISO 8601</td><td class="opt">No</td><td>"YYYY-MM-DD"</td></tr>
-      <tr><td>Zeitfenster von</td><td class="mono">arrivalWindowBegin</td><td>string</td><td class="req">YES</td><td>"HH:MM"</td></tr>
-      <tr><td>Zeitfenster bis</td><td class="mono">arrivalWindowEnd</td><td>string</td><td class="req">YES</td><td>"HH:MM"</td></tr>
+      <tr><td>Arrival Window Start</td><td class="mono">arrivalWindowBegin</td><td>string</td><td class="req">YES</td><td>"HH:MM"</td></tr>
+      <tr><td>Arrival Window End</td><td class="mono">arrivalWindowEnd</td><td>string</td><td class="req">YES</td><td>"HH:MM"</td></tr>
       <tr><td>Kundennummer</td><td class="mono">customerId</td><td>string</td><td class="opt">No</td><td>External key from Customer Pre-Process</td></tr>
     </table>
   </div>
@@ -836,7 +800,7 @@
     <div class="mapping-title">3.4 Appointment Notes — appointments[].appointmentNotes[]</div>
     <table class="mapping-table">
       <tr><th>MEWA Midsys Field</th><th>Geotab Field</th><th>Type</th><th>Req</th><th>Notes</th></tr>
-      <tr><td>Anfahrtshinweis-Text</td><td class="mono">comment</td><td>string</td><td class="req">YES</td><td>—</td></tr>
+      <tr><td>Approach Instruction Text</td><td class="mono">comment</td><td>string</td><td class="req">YES</td><td>—</td></tr>
       <tr><td class="hardcoded">—</td><td class="mono">createDateTimeUtc</td><td>ISO 8601</td><td class="req">YES</td><td class="hardcoded">Sync timestamp</td></tr>
       <tr><td class="hardcoded">—</td><td class="mono">noteSource</td><td>string</td><td class="req">YES</td><td class="hardcoded">Hardcoded: "Midsys"</td></tr>
       <tr><td class="hardcoded">—</td><td class="mono">createUser</td><td>string</td><td class="req">YES</td><td class="hardcoded">Hardcoded: "midsys-sync"</td></tr>
@@ -981,12 +945,12 @@
 <div class="diagram" id="selfintegration">
 
   <div style="padding:12px 16px;background:#f0fae6;border:1.5px solid #7cc244;border-radius:8px;margin-bottom:20px;font-size:12px;">
-    <strong style="color:#3a6e10;">Szenario: MEWA integriert direkt — ohne ICCON</strong><br>
-    MEWA's eigenes Entwicklungsteam baut die Middleware. Ziel: maximaler Daten-Reuse aus Midsys, minimaler Aufwand. Alle Felder die ICCON hardcoden würde, setzt MEWA selbst statisch. Die API-Logik bleibt identisch — nur der Entwickler wechselt.
+    <strong style="color:#3a6e10;">Approach: MEWA builds the integration directly</strong><br>
+    MEWA's own development team builds the middleware. Goal: maximum data reuse from Midsys, minimum effort. All fields are set statically by MEWA. The API logic is identical — only the implementor changes.
   </div>
 
   <!-- WHAT MEWA NEEDS TO BUILD -->
-  <div class="mapping-title" style="margin-bottom:12px;">Was MEWA bauen muss</div>
+  <div class="mapping-title" style="margin-bottom:12px;">What MEWA needs to build</div>
 
   <div class="dep-chain" style="margin-bottom:28px;">
 
@@ -1006,7 +970,7 @@
         </div>
         <div class="dep-card-meta">
           <span class="badge once" style="background:#d4f0b0;color:#3a6e10;border:1px solid #7cc244;">✓ Done</span>
-          <span class="badge api">Action: Patrick übergibt Credentials an MEWA</span>
+          <span class="badge api">Action: Patrick hands over credentials an MEWA</span>
         </div>
       </div>
     </div>
@@ -1017,13 +981,13 @@
         <div class="dep-vline"></div>
       </div>
       <div class="dep-card">
-        <div class="dep-card-title">Branch-Mapping-Tabelle aufbauen</div>
-        <div class="dep-card-body">Einmalig <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">GET /branches</code> aufrufen → alle Branch-IDs laden → statische Tabelle anlegen:<br>
+        <div class="dep-card-title">Build Branch Mapping Table</div>
+        <div class="dep-card-body">Run GET /branches once to fetch all Branch IDs → build a static mapping table:<br>
           <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">TERRITORY_CODE → branch.id</code><br>
-          Diese Tabelle wird bei jedem Sync als Lookup verwendet. Ändert sich nur wenn neue Gesellschaften hinzukommen.
+          This table is used as a lookup on every sync. Only needs updating when new Gesellschaften are added.
         </div>
         <div class="dep-card-meta">
-          <span class="badge once">One-time + bei neuen Gesellschaften</span>
+          <span class="badge once">One-time + when new Gesellschaften are added</span>
           <span class="badge api">GET /branches</span>
         </div>
       </div>
@@ -1036,7 +1000,7 @@
       </div>
       <div class="dep-card">
         <div class="dep-card-title">OrderType-ID als Konstante speichern</div>
-        <div class="dep-card-body">Einmalig <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">GET /orderTypes</code> aufrufen → die MEWA-spezifische OrderType-ID identifizieren → als Konstante im Code hinterlegen. Wird auf jeden Order und jedes Appointment gesetzt.</div>
+        <div class="dep-card-body">Once — run <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">GET /orderTypes</code> aufrufen → die MEWA-spezifische OrderType-ID identifizieren → als Konstante im Code hinterlegen. Wird auf jeden Order und jedes Appointment gesetzt.</div>
         <div class="dep-card-meta">
           <span class="badge once">One-time</span>
           <span class="badge api">GET /orderTypes</span>
@@ -1051,9 +1015,9 @@
       </div>
       <div class="dep-card">
         <div class="dep-card-title">Customer-Sync aus ERP/CRM</div>
-        <div class="dep-card-body">Kundenstamm aus MEWA ERP/CRM extrahieren → <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">POST /customers</code> für jeden Kunden aufrufen. Die <strong>Kundennummer</strong> wird als <code style="font-size:10px;">id</code> (externer Key) gesetzt — dieselbe Nummer wird später auf Appointments als <code style="font-size:10px;">customerId</code> referenziert.</div>
+        <div class="dep-card-body">Extract customer master data from MEWA CRM → call <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">POST /customers</code> for each customer. The <strong>Kundennummer</strong> becomes the <code style="font-size:10px;">id</code> (external key) — the same number is referenced on Appointments as <code style="font-size:10px;">customerId</code>.</div>
         <div class="dep-card-meta">
-          <span class="badge once">Onboarding + bei Stammdatenänderungen</span>
+          <span class="badge once">Onboarding + on CRM master data changes</span>
           <span class="badge api">POST /customers</span>
         </div>
       </div>
@@ -1065,7 +1029,7 @@
       </div>
       <div class="dep-card">
         <div class="dep-card-title">Täglicher Sync — PUT /orders</div>
-        <div class="dep-card-body">Der Kern der Integration. Midsys täglich abfragen → Daten transformieren → als JSON-Payload an <code style="font-size:10px;background:#f0f4f8;padding:2px 6px;border-radius:3px;">PUT /orders</code> senden. Rolling 8-Tage-Fenster. Detaillierter Aufbau: siehe Tab 2 und 3.</div>
+        <div class="dep-card-body">The core daily integration. Query Midsys → transform → send JSON payload to PUT /orders. Rolling 8-day window. Full detail in Tabs 2 and 6.</div>
         <div class="dep-card-meta">
           <span class="badge daily">Täglich</span>
           <span class="badge api">PUT /orders</span>
@@ -1080,7 +1044,7 @@
   <div class="mapping-title" style="margin-bottom:12px;">Minimale Transformations-Logik (Pseudo-Code)</div>
   <div style="background:#1e2a3a;color:#c8d8e8;font-family:'Roboto Mono',monospace;font-size:10px;line-height:1.7;padding:16px 18px;border-radius:8px;margin-bottom:24px;overflow-x:auto;">
 <pre style="margin:0;">
-<span style="color:#7cc244;">// 1. Konstanten (einmalig konfigurieren)</span>
+<span style="color:#7cc244;">// 1. Constants (configure once at onboarding)</span>
 TENANT_ID     = "mewa-tenant"          <span style="color:#7cc244;">// von Geotab IT</span>
 USER_ID       = "mewa-api-user"        <span style="color:#7cc244;">// von Geotab IT</span>
 ORDER_TYPE_ID = "abc123"               <span style="color:#7cc244;">// aus GET /orderTypes</span>
@@ -1147,17 +1111,6 @@ Body: [order, order, ...]               <span style="color:#7cc244;">// Array al
   </div>
 
   <!-- WHAT MEWA DOES NOT NEED TO BUILD -->
-  <div class="mapping-title" style="margin-bottom:12px;">Was MEWA NICHT braucht (vs. ICCON-Szenario)</div>
-  <table class="mapping-table" style="margin-bottom:24px;">
-    <tr><th>Thema</th><th>Mit ICCON</th><th>MEWA Self-Integration</th></tr>
-    <tr><td>Middleware-Infrastruktur</td><td>ICCON hostet und betreibt</td><td>MEWA hostet selbst (z.B. Midsys-Job, Cron, Azure Function)</td></tr>
-    <tr><td>Transformation</td><td>ICCON schreibt den Code</td><td>MEWA Entwickler schreibt den Code</td></tr>
-    <tr><td>Geotab API-Wissen</td><td>ICCON bringt es mit</td><td>Dieses Dokument + Swagger sind die Referenz</td></tr>
-    <tr><td>Hardcoded Werte</td><td>ICCON konfiguriert</td><td>MEWA konfiguriert dieselben Konstanten selbst</td></tr>
-    <tr><td>API-Credentials</td><td>Geotab IT → ICCON</td><td>Geotab IT → MEWA direkt</td></tr>
-    <tr><td>Monitoring</td><td>ICCON überwacht</td><td>MEWA überwacht via GET /health + GET /orders</td></tr>
-    <tr><td>Customer Pre-Process</td><td>ICCON läuft gegen MEWA ERP/CRM</td><td>MEWA hat direkten Zugriff auf eigenes ERP/CRM — einfacher</td></tr>
-  </table>
 
   <!-- OPEN QUESTIONS SPECIFIC TO THIS SCENARIO -->
   <div class="mapping-title" style="margin-bottom:12px;">Zusätzliche Fragen bei Self-Integration</div>
@@ -1452,7 +1405,7 @@ CONFIG = {
 
 <!-- ── PHASE 2: CUSTOMER ANLEGEN ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 2 — Customer anlegen / aktualisieren (POST /customers)</div>
+<div class="pc-title">Phase 2 — Customer Sync (POST /customers)</div>
 <div class="pc-note">
   <strong>Was der Swagger zeigt:</strong> Der <code>ms-customer</code>-Service ist ein eigener Microservice. Das Contract-Schema im Swagger zeigt nur <code>id</code> + <code>name</code> — aber <code>POST /customers</code> hat keinen dokumentierten Request-Body, was bedeutet: der Service akzeptiert mehr Felder (Adresse, Kontakte, Notizen) als im Swagger sichtbar. Diese werden intern gespeichert.<br><br>
   <strong>Wichtig:</strong> <code>customerId</code> auf dem Appointment verknüpft das Appointment mit dem Customer-Record — aber der Routing-Engine braucht <code>address</code> + <code>contactDetails</code> trotzdem direkt auf dem Appointment (required fields). Die Customer-Daten dienen der Anzeige im Dispatcher-/Driver-App und Reporting. <strong>Anfahrtshinweise auf Customer-Ebene</strong> sind daher eine valide Option für die App-Anzeige — Courtney Egts bestätigen, ob sie beim Appointment im Driver-App erscheinen.
@@ -1517,10 +1470,10 @@ function syncCustomers(erpCustomers):
 
 <!-- ── PHASE 3: PLAN ANLEGEN ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 3 — Baseline-Plan anlegen (POST /plans)</div>
+<div class="pc-title">Phase 3 — Baseline Plan Creation (POST /plans)</div>
 <div class="pc-note">
   <strong>Swagger bestätigt:</strong> <code>PostPlan</code> hat das Feld <code>baseline: boolean</code> — <em>"Set to True if posting baseline plan. Note that all orders must have actual start and end times unless they were unassigned on the day and that all resources must be available in the plan request."</em><br><br>
-  Das bedeutet: Midsys muss für jeden Patch <strong>Ist-Zeiten</strong> (actual start + end) liefern — <code>visits[].actuals.onsiteArrivalDateTimeUtc</code> + <code>closeDateTimeUtc</code>. Ohne diese Times läuft der Baseline-Import nicht. Sequenz läuft über <code>visits[].planned.sequence</code> (Reihenfolge pro Ressource). Plan wird pro Gesellschaft (Branch) pro Tag angelegt. <code>status: "DISPATCH"</code> direkt beim POST setzt den Plan sofort auf Dispatch-Modus — kein separater Publish-Call nötig.
+  This means Midsys must provide <strong>actual times</strong> (start + end) for every Patch — <code>visits[].actuals.onsiteArrivalDateTimeUtc</code> + <code>closeDateTimeUtc</code>. Without these times the baseline import fails. Sequence is controlled via <code>visits[].planned.sequence</code> (order per resource). One plan is created per Gesellschaft (Branch) per day. <code>status: "DISPATCH"</code> direkt beim POST setzt den Plan sofort auf Dispatch-Modus — no separate publish call needed.
 </div>
 <div class="code"><pre>
 <span class="c-green">// ── Phase 3: Baseline-Plan anlegen ───────────────────────────</span>
@@ -1640,11 +1593,11 @@ function buildOrderWithVisits(tour, date):
 
 <!-- ── PHASE 4: PUT /ORDERS — TAGESUPDATE ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 4 — Täglicher Order-Update (PUT /orders)</div>
+<div class="pc-title">Phase 4 — Daily Order Update (PUT /orders)</div>
 <div class="pc-note">
-  <strong>Wichtig:</strong> Der Baseline-Plan (Phase 3) enthält bereits alle Orders + Appointments + Visits. <code>PUT /orders</code> wird danach täglich verwendet um Änderungen aus Midsys zu aktualisieren — neue Patches, stornierte Aufträge, geänderte Zeitfenster. Orders mit <code>sourceType: "API"</code> sind permanent; Appointments die einmal angelegt wurden bleiben erhalten auch wenn ein späteres PUT sie weglässt — Status auf <code>appointmentStatus: 5</code> (Cancelled) setzen statt weglassen.<br><br>
+  <strong>Important:</strong> The baseline plan (Phase 3) already contains all Orders, Appointments and Visits. <code>PUT /orders</code> is then used daily to sync changes from Midsys — new patches, cancellations, updated time windows. Orders with <code>sourceType: "API"</code> are permanent; Appointments persist even if a later PUT omits them — set <code>appointmentStatus: 5</code> (Cancelled) instead of omitting.<br><br>
   <strong>Mehrere Patches pro Kunden-Standort:</strong> Jeder Patch = eigenes Appointment mit eigenem Zeitfenster. BOM bleibt die Artikelliste pro Patch. Das System unterstützt mehrere Appointments am selben Standort problemlos (verschiedene Zeitfenster, eigene Visit-IDs).<br><br>
-  <strong>Ressource ohne Fahrzeug:</strong> Swagger zeigt <code>lockedResource</code> als optional + <code>visitStatus: 8 = Unassigned</code> → Appointment ohne Ressource ist möglich. Geotab-Dispatcher weist später zu.
+  <strong>No resource assigned:</strong> Swagger confirms <code>lockedResource</code> is optional + <code>visitStatus: 8 = Unassigned</code> is valid. Geotab dispatcher assigns later.
 </div>
 <div class="code"><pre>
 <span class="c-green">// ── Phase 4: PUT /orders — Tagesupdate ───────────────────────</span>
@@ -1733,7 +1686,7 @@ function updateOrders(midsysTouren, date):
 
 <!-- ── PHASE 5: ROUTEN-NUMMER ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 5 — Routen-Nummer (z.B. "904") im Plan-Namen</div>
+<div class="pc-title">Phase 5 — Route Number in Plan Name</div>
 <div class="pc-note">
   <strong>Swagger-Analyse:</strong> Kein Custom-Field-Konzept für Vehicles/Resources in der API dokumentiert. Die sauberste und sofort verfügbare Lösung: <strong>Routen-Nummer im Plan-Namen kodieren</strong> — bereits in Phase 3 eingebaut (<code>"2026-06-23 | Route 904 | DE-NW"</code>). Der Dispatcher sieht den Plan-Namen direkt. Alternativ: Vehicle-Name aus Geotab enthält die Routen-Nummer (<code>PATCH /vehicles/{id}</code> mit <code>name: "Route 904"</code>) — dann erscheint sie im Dispatch-View neben der Route.
 </div>
@@ -1763,10 +1716,10 @@ function setVehicleRouteName(vehicleId, routenNummer):
 
 <!-- ── PHASE 6: PLAN DISPATCH ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 6 — Plan sofort auf Dispatch setzen</div>
+<div class="pc-title">Phase 6 — Auto-Publish Plan to Dispatch</div>
 <div class="pc-note">
   <strong>Swagger bestätigt:</strong> <code>PostPlan.status = "DISPATCH"</code> — <em>"the only accepted value is DISPATCH. It creates a readonly plan representing the OP Plan that dispatch created when transitioning to the dispatch day."</em><br><br>
-  Das bedeutet: kein separater Publish-Call nötig. Der Plan wird direkt beim POST mit <code>status: "DISPATCH"</code> angelegt und ist sofort im Dispatch-Modus sichtbar. Zusätzlich gibt es <code>PATCH /plans/{id}/status</code> — aber der Body ist im Swagger leer dokumentiert, Enum-Werte müssen Courtney Egts bestätigen. Sicherste Strategie: <code>status: "DISPATCH"</code> direkt beim Plan-POST.
+  Das bedeutet: no separate publish call needed. Der Plan wird direkt beim POST mit <code>status: "DISPATCH"</code> angelegt und ist sofort im Dispatch-Modus sichtbar. Zusätzlich gibt es <code>PATCH /plans/{id}/status</code> — aber der Body ist im Swagger leer dokumentiert, Enum-Werte müssen Courtney Egts bestätigen. Sicherste Strategie: <code>status: "DISPATCH"</code> direkt beim Plan-POST.
 </div>
 <div class="code"><pre>
 <span class="c-green">// ── Phase 6: Plan auf Dispatch setzen ────────────────────────</span>
@@ -1789,7 +1742,7 @@ function activatePlan(planId):
 
 <!-- ── PHASE 7: STATUS & GEOFENCING ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 7 — Status-Tracking (Visit-Status Enum aus Swagger)</div>
+<div class="pc-title">Phase 7 — Status Tracking (Visit Status from Swagger)</div>
 <div class="pc-note">
   <strong>Swagger bestätigt Visit-Status-Enum:</strong> 1=Assigned · 2=Enroute · 3=InProgress · 4=Completed · 5=Cancelled · 6=NotDone · 7=Undone · 8=Unassigned.<br>
   Fahrer-initiiert über Driver-App → Geotab schreibt <code>actuals.onsiteArrivalDateTimeUtc</code> + <code>closeDateTimeUtc</code>. GPS-Geofencing setzt Status automatisch bei Einfahrt (→ Enroute/InProgress) und Ausfahrt (→ Completed). MEWA liest Status via <code>GET /dispatch/branchSchedules/{branchId}</code> und schreibt zurück nach Midsys.
@@ -1854,7 +1807,7 @@ function getActuals(appointmentId):
 <div class="pc-section">
 <div class="pc-title" style="color:#6c3483;border-left-color:#8e44ad;">Phase 9 (V2) — Forms Integration</div>
 <div class="pc-note">
-  <strong>Swagger confirmed:</strong> <code>CreateFormTemplate</code> accepts <code>htmlContent</code> (full HTML form), <code>branchIds[]</code> (scoped per Gesellschaft), and <code>orderTypeIds[]</code> (triggered per job type). On visit close, the driver submits the form — Geotab stores the result on <code>visit.actuals.formTemplateSubmission</code>. MEWA reads this via status polling and creates a Service Ticket in the MEWA CRM via webhook.
+  <strong>Swagger confirmed:</strong> <code>CreateFormTemplate</code> accepts <code>htmlContent</code> (full HTML form), <code>branchIds[]</code> (scoped per Gesellschaft/Branch), and <code>orderTypeIds[]</code> (triggered per job type). On visit close, the driver submits the form — Geotab stores the result on <code>visit.actuals.formTemplateSubmission</code>. MEWA reads this via status polling and creates a Service Ticket in the MEWA CRM via webhook.
 </div>
 <div class="code"><pre>
 <span class="c-green">// ── Phase 9: Forms Integration ───────────────────────────────</span>
@@ -2005,7 +1958,7 @@ function handleCRMJobStatus(visit, appointmentId):
 
 <!-- ── PHASE 8: VOLLSTÄNDIGER SYNC-ZYKLUS ── -->
 <div class="pc-section">
-<div class="pc-title">Phase 8 — Vollständiger Tages-Sync (Orchestration)</div>
+<div class="pc-title">Phase 8 — Full Daily Sync (Orchestration)</div>
 <div class="code"><pre>
 <span class="c-green">// ── Phase 8: Tages-Sync orchestrieren ────────────────────────</span>
 <span class="c-green">// Läuft täglich 03:00 Uhr für rolling 8-Tage-Fenster</span>
@@ -2046,7 +1999,7 @@ function dailySync():
       if result.appointments.length != expected:
         alert("Sync-Fehler: " + branchId + " " + date)
 
-  log("Tages-Sync abgeschlossen " + now())
+  log("Daily sync completed " + now())
 
 <span class="c-green">// Intraday: Status-Polling während Dispatch-Tag</span>
 function startIntradayPolling():
@@ -2065,20 +2018,20 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
 <span class="c-green">// Noch offene TODOs (echte Unklarheiten — nicht Swagger-Fragen):</span>
 <span class="c-orange">// TODO: Geocoding-Fallback — GET /common/addresses als Geotab-eigener Geocoder?</span>
 <span class="c-orange">// TODO: EUR in currency-Enum — mit Courtney Egts klären</span>
-<span class="c-orange">// TODO: Anfahrtshinweis auf Customer erscheint in Driver-App? Courtney Egts</span>
+<span class="c-orange">// TODO: Do Customer-level notes appear in Driver App at Appointment? → Courtney Egts</span>
 <span class="c-orange">// TODO: PATCH /plans/{id}/status Enum-Werte — Body leer im Swagger</span>
 </pre></div>
 </div>
 
 <!-- OFFENE PUNKTE — NUR ECHTE, SWAGGER-NICHT-BEANTWORTETE FRAGEN -->
 <div class="pc-section">
-<div class="pc-title">Noch offene Fragen (Swagger-konform — nur echte Unklarheiten)</div>
+<div class="pc-title">Remaining Open Questions (Swagger-verified gaps only)</div>
 <div class="oq-list">
 
   <div class="oq-item high">
     <div class="oq-num high">P1</div>
     <div class="oq-body">
-      <strong>Erscheinen Customer-Notes im Driver-App beim Appointment?</strong><br>
+      <strong>Do Customer-level notes appear in the Driver App at the Appointment?</strong><br>
       Swagger zeigt <code>ms-customer</code> als eigenen Microservice. Wenn Notes auf Customer-Ebene dem Fahrer angezeigt werden: MEWA spart Anfahrtshinweise bei jedem Appointment-Call. Courtney Egts bestätigen.
       <div class="oq-owner">HIGH — Dateneffizienz · Owner: Courtney Egts (Geotab Integrations)</div>
     </div>
@@ -2087,8 +2040,8 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
   <div class="oq-item high">
     <div class="oq-num high">P2</div>
     <div class="oq-body">
-      <strong>Welche Status-Werte akzeptiert <code>PATCH /plans/{id}/status</code>?</strong><br>
-      Swagger dokumentiert den Body als leer. Wenn <code>status: "DISPATCH"</code> beim POST /plans nicht ausreicht: welche Transitions gibt es?
+      <strong>What status values does <code>PATCH /plans/{id}/status</code>?</strong><br>
+      Swagger documents the body as empty. If <code>status: "DISPATCH"</code> beim POST /plans nicht ausreicht: welche Transitions gibt es?
       <div class="oq-owner">HIGH — Publish-Automation · Owner: Courtney Egts</div>
     </div>
   </div>
@@ -2096,8 +2049,8 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
   <div class="oq-item high">
     <div class="oq-num high">P3</div>
     <div class="oq-body">
-      <strong>currency Enum: nur USD + CAD — wie EUR abbilden?</strong><br>
-      MEWA operiert in EUR. <code>unitOfMeasurement: "Other"</code> + <code>customUnitOfMeasurement</code> existiert für Einheiten — gibt es ein Äquivalent für Currency?
+      <strong>currency ENUM: only USD + CAD — how to handle EUR?</strong><br>
+      MEWA operates in EUR. <code>unitOfMeasurement: "Other"</code> + <code>customUnitOfMeasurement</code> existiert für Einheiten — gibt es ein Äquivalent für Currency?
       <div class="oq-owner">Medium · Owner: Courtney Egts</div>
     </div>
   </div>
@@ -2105,7 +2058,7 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
   <div class="oq-item medium">
     <div class="oq-num medium">P4</div>
     <div class="oq-body">
-      <strong>Geocoding: Ist <code>GET /common/addresses?address=...</code> als Fallback nutzbar?</strong><br>
+      <strong>Geocoding: Is <code>GET /common/addresses?address=...</code> usable as a geocoding fallback?</strong><br>
       Swagger zeigt diesen Endpoint im API — gibt er geoCode zurück wenn Midsys keine GPS-Koordinaten hat?
       <div class="oq-owner">Medium · Owner: Courtney Egts</div>
     </div>
@@ -2114,7 +2067,7 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
   <div class="oq-item medium">
     <div class="oq-num medium">P5</div>
     <div class="oq-body">
-      <strong>Muss <code>address</code> + <code>contactDetails</code> bei Appointments mitgesendet werden wenn der Customer-Record existiert?</strong><br>
+      <strong>Must <code>address</code> + <code>contactDetails</code> be sent on every Appointment when a Customer record already exists?</strong><br>
       Swagger markiert beide als required — aber wenn ms-customer sie intern speichert, sollte ein Auto-Resolve möglich sein. Courtney Egts bestätigen ob die Felder dann optional werden.
       <div class="oq-owner">Medium · Owner: Courtney Egts</div>
     </div>
@@ -2379,7 +2332,7 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
           <div class="ab-title">Config Store</div>
           <div class="ab-sub">
             Static maps — set up once manually.<br>
-            TERRITORY → branch.id (from Midsys)<br>
+            TERRITORY → branch.id (source: Midsys, set up manually)<br>
             OrderType IDs · OptimizationProfile ID
           </div>
           <span class="ab-tag">Phase 1 · one-time</span>
@@ -2577,7 +2530,7 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
       <td><strong>Branch Lookup</strong></td>
       <td>Geotab API</td>
       <td>Config Store</td>
-      <td>branch.id per Gesellschaft</td>
+      <td>branch.id per Gesellschaft (business unit)</td>
       <td>One-time setup</td>
       <td class="mono">GET /branches</td>
     </tr>
@@ -2682,15 +2635,14 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
 <!-- Section 1: Data Hierarchy -->
 <div class="gl-section">
   <div class="gl-title">
-    <span class="en">Data Hierarchy — Midsys → Geotab → Verizon</span>
-    <span class="de">Datenhierarchie — Midsys → Geotab → Verizon</span>
+    Data Hierarchy — Midsys → Geotab → Verizon
   </div>
   <table class="gl-table" id="gl-hierarchy">
     <tr>
       <th>Midsys (MEWA)</th>
       <th>Geotab Advanced Routing</th>
       <th>Verizon</th>
-      <th>Description / Beschreibung</th>
+      <th>Description</th>
     </tr>
     <tr class="gl-row">
       <td class="term">Gesellschaft</td>
@@ -2841,14 +2793,33 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
       <td>PUT /orders</td>
       <td>Sync horizon. MEWA sends all Appointments for the next 8 days daily. Past dates are not updated. Appointments persist even if omitted from a subsequent PUT.</td>
     </tr>
+    <tr class="gl-row">
+      <td class="term">Form Template</td>
+      <td>POST /admin/formTemplates</td>
+      <td>HTML form assigned to one or more OrderTypes and Branches. Driver fills and submits at visit close. Result stored on <code style="font-size:9px;">visit.actuals.formTemplateSubmission</code>. MEWA reads via polling and creates a CRM Service Ticket via webhook. (Phase 9)</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">CRM Ad-Hoc Job</td>
+      <td>PUT /orders · orderType: CRM_ADHOC</td>
+      <td>Job created in MEWA CRM outside of the Midsys batch. Pushed immediately via PUT /orders with visitStatus=8 (Unassigned). Appointment Engine attempts auto-insert into running day plan. If no slot: stays Unassigned for dispatcher. Status + form submission flow back to CRM. (Phase 10)</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">Appointment Engine</td>
+      <td>POST /appointmentEngines</td>
+      <td>Geotab component that evaluates whether an Unassigned Appointment can be auto-inserted into a running plan. Checks resource availability, time window and OrderType. If no match: stays visitStatus=8 (Unassigned).</td>
+    </tr>
+    <tr class="gl-row">
+      <td class="term">CRM Service Ticket</td>
+      <td>MEWA CRM webhook</td>
+      <td>Ticket created automatically in MEWA CRM when a driver closes a visit with a Form Template submission. Links to Kundennummer + Appointment ID. Triggered from visit.actuals.formTemplateSubmission during status polling.</td>
+    </tr>
   </table>
 </div>
 
 <!-- Section 3: System Terms -->
 <div class="gl-section">
   <div class="gl-title">
-    <span class="en">System Terms</span>
-    <span class="de">Systembegriffe</span>
+    System Terms
   </div>
   <table class="gl-table" id="gl-systems">
     <tr><th>Term</th><th>Description</th></tr>
@@ -2914,8 +2885,7 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
 <!-- Section 4: Contacts -->
 <div class="gl-section">
   <div class="gl-title">
-    <span class="en">Project Contacts</span>
-    <span class="de">Projektkontakte</span>
+    Project Contacts
   </div>
   <table class="gl-table">
     <tr><th>Role</th><th>Name</th><th>Company</th></tr>
@@ -2955,11 +2925,6 @@ function showDiagram(id) {
   document.querySelectorAll('.phase-tab')[tabs[id]].classList.add('active');
 }
 
-function setLang(lang) {
-  document.documentElement.classList.toggle('lang-de', lang === 'de');
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
-}
 </script>
 </body>
 </html>
