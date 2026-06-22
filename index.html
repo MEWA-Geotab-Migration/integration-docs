@@ -562,6 +562,10 @@
      ════════════════════════════════════════════════ -->
 <div class="diagram" id="flow">
 
+  <div style="padding:10px 14px;background:#f0fae6;border:1.5px solid #7cc244;border-radius:8px;margin-bottom:16px;font-size:11px;">
+    <strong style="color:#3a6e10;">Current approach: MEWA builds the integration directly.</strong> MEWA's own development team owns the integration layer. ICCON (Brett Kelley) is available as an optional bridge if specific technical gaps arise — but has made no commitment to this project yet.
+  </div>
+
   <p style="font-size:12px;color:var(--gray);margin-bottom:16px;"><strong>Phase A — Startup (one-time):</strong> Customer sync, Branch/OrderType lookup, Auth setup</p>
 
   <div class="flow" style="margin-bottom:32px;">
@@ -592,19 +596,19 @@
         <div class="arrow-h"><div class="line"></div><div class="head"></div></div>
       </div>
     </div>
-    <!-- ICCON lane -->
+    <!-- MEWA Sync Layer -->
     <div class="lane-wrap">
-      <div class="lane-header">ICCON Integration Layer</div>
+      <div class="lane-header" style="background:#27ae60;">MEWA Integration Layer</div>
       <div class="lane-body">
-        <div class="box iccon">
+        <div class="box mewa">
           <div class="box-title">Customer Transform</div>
-          <div class="box-sub">Kundennr → id (external key)<br>Name → name</div>
-          <span class="tag iccon">POST /customers</span>
+          <div class="box-sub">Kundennr → id (external key)<br>Name, address, GPS, contacts → ms-customer</div>
+          <span class="tag mewa">POST /customers</span>
         </div>
-        <div class="box iccon">
+        <div class="box mewa">
           <div class="box-title">Branch + OrderType Lookup</div>
-          <div class="box-sub">Static map: TERRITORY → branch.id<br>OrderType ID = constant (V1)</div>
-          <span class="tag iccon">GET /branches + /orderTypes</span>
+          <div class="box-sub">Static map: TERRITORY → branch.id<br>OrderType IDs = constant (from onboarding script)</div>
+          <span class="tag mewa">GET /branches + /orderTypes</span>
         </div>
       </div>
     </div>
@@ -630,28 +634,28 @@
         </div>
         <div class="box geotab">
           <div class="box-title">Branches &amp; OrderTypes</div>
-          <div class="box-sub">Static reference data returned to ICCON</div>
+          <div class="box-sub">Static reference data returned to MEWA</div>
           <span class="tag geotab">Reference Data</span>
         </div>
       </div>
     </div>
   </div>
 
-  <p style="font-size:12px;color:var(--gray);margin-bottom:16px;"><strong>Phase B — Daily Sync (rolling 8-day window):</strong> Midsys Scheduler → PUT /orders</p>
+  <p style="font-size:12px;color:var(--gray);margin-bottom:16px;"><strong>Phase B — Daily Sync (rolling 8-day window):</strong> Midsys Scheduler → MEWA Integration Layer → PUT /orders</p>
 
   <div class="flow">
     <!-- MEWA lane -->
     <div class="lane-wrap">
-      <div class="lane-header">Midsys Scheduler</div>
+      <div class="lane-header">Midsys (Production System)</div>
       <div class="lane-body">
         <div class="box mewa">
           <div class="box-title">Tour</div>
-          <div class="box-sub">Tour-ID · Kundennr · Gebiet</div>
+          <div class="box-sub">Tour-ID · Kundennr · Gebiet · Routen-Nr</div>
           <span class="tag mewa">Order level</span>
         </div>
         <div class="box mewa">
           <div class="box-title">Patch / Job</div>
-          <div class="box-sub">Patch-ID · Zeitfenster · GPS · Kontakt · Anfahrtshinweis</div>
+          <div class="box-sub">Patch-ID · Zeitfenster · Ist-Zeiten · Sequenz</div>
           <span class="tag mewa">Appointment level</span>
         </div>
         <div class="box mewa">
@@ -664,7 +668,7 @@
     <!-- Arrow -->
     <div class="connector-col">
       <div class="arrow">
-        <div class="arrow-label">Flatten</div>
+        <div class="arrow-label">Extract</div>
         <div class="arrow-h"><div class="line"></div><div class="head"></div></div>
       </div>
       <div class="arrow" style="margin-top:36px;">
@@ -676,24 +680,24 @@
         <div class="arrow-h"><div class="line"></div><div class="head"></div></div>
       </div>
     </div>
-    <!-- ICCON lane -->
+    <!-- MEWA Integration Layer -->
     <div class="lane-wrap">
-      <div class="lane-header">ICCON Transform Pipeline</div>
+      <div class="lane-header" style="background:#27ae60;">MEWA Integration Layer</div>
       <div class="lane-body">
-        <div class="box iccon">
+        <div class="box mewa">
           <div class="box-title">Order Object</div>
-          <div class="box-sub">id=Tour-ID · sourceType="API"<br>account.id=Kundennr · orderStatus=1</div>
-          <span class="tag iccon">PUT /orders payload</span>
+          <div class="box-sub">id=Tour-ID · sourceType="API"<br>account.id=Kundennr · orderStatus=1<br>Plan-Name: "Datum | Route 904 | Gebiet"</div>
+          <span class="tag mewa">PUT /orders payload</span>
         </div>
-        <div class="box iccon">
+        <div class="box mewa">
           <div class="box-title">Appointment Object</div>
-          <div class="box-sub">id=Patch-ID · branch.id=TERRITORY<br>contactDetails · address+geoCode<br>arrivalDate · arrivalWindow</div>
-          <span class="tag iccon">appointments[]</span>
+          <div class="box-sub">id=Patch-ID · branch.id=TERRITORY<br>customerId=Kundennr<br>arrivalDate · arrivalWindow · sequence</div>
+          <span class="tag mewa">appointments[]</span>
         </div>
-        <div class="box iccon">
+        <div class="box mewa">
           <div class="box-title">BOM + Notes</div>
           <div class="box-sub">name="PATCH_NR | ITEM_DESC" · qty<br>appointmentNotes[].comment</div>
-          <span class="tag iccon">billOfMaterials[]</span>
+          <span class="tag mewa">billOfMaterials[]</span>
         </div>
       </div>
     </div>
