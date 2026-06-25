@@ -1350,11 +1350,13 @@ CONFIG = {
   },
 
   ORDER_TYPE: {
-    MIDSYS_JOB: "&lt;orderType.id from Step 2&gt;",
-    CRM_ADHOC:  "&lt;orderType.id from Step 2&gt;",
+    // Key insight: orderType.id = branch.id (confirmed 2026-06-25)
+    // Each branch has its own OrderType with same ID
+    // e.g. branch g01 (Manching) → orderType.id = "g01" (Tausch)
+    // Set dynamically: orderType.id = BRANCH_MAP[gesellschaftCode]
   },
 
-  OPT_PROFILE_ID: "&lt;optimizationProfile.id from Step 3&gt;",
+  OPT_PROFILE_ID: "Balanced",  // confirmed live — also: "On-Time Arrival", "Reduced Drive"
 }
 """)
 </pre></div>
@@ -1413,10 +1415,11 @@ CONFIG = {
   },
 
   <span class="c-green">// ── Paste from onboarding Step 2 ──</span>
-  ORDER_TYPE: {
-    MIDSYS_JOB: "ot-id-midsys",  <span class="c-green">// regular Midsys tour job</span>
-    CRM_ADHOC:  "ot-id-crm",     <span class="c-green">// ad-hoc / CRM-initiated job</span>
-  },
+  ORDER_TYPE_GROUP_ID: "midsys_jobs",  <span class="c-green">// confirmed group ID</span>
+  <span class="c-green">// Key insight: orderType.id = branch.id (confirmed 2026-06-25)</span>
+  <span class="c-green">// Each Gesellschaft has its own OrderType — ID matches branch ID</span>
+  <span class="c-green">// Usage: orderType: { id: BRANCH_MAP[gesellschaftCode] }</span>
+  OPT_PROFILE_ID: "Balanced",  <span class="c-green">// or "On-Time Arrival" / "Reduced Drive"</span>
 
   <span class="c-green">// ── Paste from onboarding Step 3 ──</span>
   OPT_PROFILE_ID: "opt-profile-id",
