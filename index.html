@@ -1052,7 +1052,7 @@
 TENANT_ID     = "mewa-tenant"          <span style="color:#7cc244;">// from Geotab IT</span>
 USER_ID       = "mewa-api-user"        <span style="color:#7cc244;">// from Geotab IT</span>
 ORDER_TYPE_ID = "abc123"               <span style="color:#7cc244;">// from GET /orderTypes</span>
-BRANCH_MAP    = { "AUS-01": "gtb-br-1", "DE-NW": "gtb-br-2", ... }
+BRANCH_MAP    = { "g01":"MEWA Manching","g03":"MEWA Rodgau","g04":"MEWA Bottrop",... } // 23 branches — see CONFIG
 
 <span style="color:#7cc244;">// 2. Per Tour from Midsys:</span>
 order = {
@@ -1323,10 +1323,30 @@ CONFIG = {
   AUTH_URL:        "https://my3075.geotab.com/rop/authenticate",
 
   BRANCH_MAP: {
-    // Paste from Step 1: "TERRITORY_CODE": "branch.id"
-    "DE-NW":  "&lt;branch.id&gt;",
-    "DE-BY":  "&lt;branch.id&gt;",
-    "AT-W":   "&lt;branch.id&gt;",
+    // Confirmed live branch IDs — fetched 2026-06-25 from GET /branches
+    "g01": "MEWA Manching",           // Manching, DE
+    "g03": "MEWA Rodgau",             // Rodgau, DE
+    "g04": "MEWA Bottrop",            // Bottrop, DE
+    "g05": "MEWA Groß Kienitz",       // Blankenfelde-Mahlow, DE
+    "g06": "MEWA Jena",               // Jena, DE
+    "g07": "MEWA Lauenburg",          // Lauenburg/Elbe, DE
+    "g08": "MEWA Hameln",             // Hameln, DE
+    "g12": "MEWA Meißenheim",         // Meißenheim, DE
+    "g13": "MEWA Weil im Schönbuch",  // Weil im Schönbuch, DE
+    "g18": "MEWA Saarlouis",          // Saarlouis, DE
+    "g45": "MEWA Österreich",         // Schwechat, AT
+    "g52": "MEWA Netherlands",        // Amersfoort, NL
+    "g53": "MEWA UK",                 // Coleshill, GB
+    "g54": "MEWA Hungary",            // Biatorbágy, HU
+    "g55": "MEWA Switzerland",        // Oftringen, CH
+    "g59": "MEWA Poland",             // Sosnowiec, PL
+    "g60": "MEWA Belgium",            // Binche, BE
+    "g65": "MEWA Italy",              // Turbigo, IT
+    "g66": "MEWA Spain",              // Viladecans, ES
+    "g68": "MEWA Slovenia/Slovakia",  // Bratislava, SK
+    "g69": "MEWA Czech Republic",     // Praha, CZ
+    "g70": "MEWA France",             // Avermes, FR
+    "g96": "MEWA Romania",            // Florești, RO
   },
 
   ORDER_TYPE: {
@@ -2336,7 +2356,7 @@ WEBHOOK_ENDPOINT "/crm-adhoc" → createAdHocJob(crmJob)
           <div class="ab-title">Config Store</div>
           <div class="ab-sub">
             Static maps — set up once manually.<br>
-            TERRITORY → branch.id (source: Midsys, set up manually)<br>
+            23 confirmed branch IDs (g01–g96) — set 2026-06-25<br>
             OrderType IDs · OptimizationProfile ID
           </div>
           <span class="ab-tag">Phase 1 · one-time</span>
