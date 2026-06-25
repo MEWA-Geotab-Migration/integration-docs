@@ -1583,7 +1583,7 @@ function buildOrderWithVisits(tour, date):
         unitOfMeasurement:          item.unit,
         perUnitValue:               item.weight ?? 0,
         perUnitCost:                0, perUnitRevenue:0,
-        currency:                   "USD",  <span class="c-green">// EUR-Klärung offen</span>
+        currency:                   "EUR",  <span class="c-green">// ✓ EUR confirmed supported</span>
         transferType:               "DELIVERY",
         hazmat:                     false,
         durationModifierPerQuantity:0
@@ -1624,7 +1624,7 @@ function buildOrderWithVisits(tour, date):
 <div class="pc-note">
   <strong>Important:</strong> The baseline plan (Phase 3) already contains all Orders, Appointments and Visits. <code>PUT /orders</code> is then used daily to sync changes from Midsys — new patches, cancellations, updated time windows. Orders with <code>sourceType: "API"</code> are permanent; Appointments persist even if a later PUT omits them — set <code>appointmentStatus: 5</code> (Cancelled) instead of omitting.<br><br>
   <strong>Mehrere Patches pro Kunden-Standort:</strong> Jeder Patch = eigenes Appointment mit eigenem Zeitfenster. BOM bleibt die Artikelliste pro Patch. Das System unterstützt mehrere Appointments am selben Standort problemlos (verschiedene Zeitfenster, eigene Visit-IDs).<br><br>
-  <strong>No resource assigned:</strong> Swagger confirms <code>lockedResource</code> is optional + <code>visitStatus: 8 = Unassigned</code> is valid. Geotab dispatcher assigns later.
+  <strong>No resource assigned:</strong> Partially confirmed (Courtney Egts, 2026-06-25): Works for individual unassigned Appointments (pool). Does <strong>not</strong> work for full unassigned routes — a Vehicle must be assigned to the route, Driver can be added later. Implication: MEWA needs a default vehicle per branch for import.
 </div>
 <div class="code"><pre>
 <span class="c-green">// ── Phase 4: PUT /orders — Tagesupdate ───────────────────────</span>
@@ -1698,7 +1698,7 @@ function updateOrders(midsysTouren, date):
           customUnitOfMeasurement:    item.unit === "Other" ? item.unitText : "",
           perUnitValue:               item.weight ?? 0,
           perUnitCost:                0, perUnitRevenue: 0,
-          currency:                   "USD",  <span class="c-green">// EUR-Klärung offen</span>
+          currency:                   "EUR",  <span class="c-green">// ✓ EUR confirmed supported</span>
           transferType:               "DELIVERY",
           hazmat:                     false,
           durationModifierPerQuantity:0
